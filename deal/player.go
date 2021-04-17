@@ -8,6 +8,7 @@ import (
 	"filippo.io/age"
 	"filippo.io/age/armor"
 	"github.com/giorgioazzinnaro/farmfa/api"
+	"gopkg.in/square/go-jose.v2"
 )
 
 // EncryptFunc turns a Toc into an encrypted string
@@ -62,5 +63,21 @@ func EncryptWithAge(player age.Recipient) EncryptFunc {
 			return "", fmt.Errorf("failed to close armor: %w", err)
 		}
 		return out.String(), nil
+	}
+}
+
+func EncryptWithJWE(player *jose.Recipient) EncryptFunc {
+	return func(toc *api.Toc) (string, error) {
+		enc, err := jose.NewEncrypter(jose.A256CBC_HS512, *player, nil)
+		if err != nil {
+			return "", err
+		}
+
+		object, err := enc.Encrypt([]byte(toc.Share))
+		if err != nil {
+			return "", err
+		}
+
+		return object.CompactSerialize()
 	}
 }

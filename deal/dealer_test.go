@@ -64,7 +64,7 @@ func TestCreateTocs_basic(t *testing.T) {
 
 		w, err := io.Copy(ioutil.Discard, decrypter)
 		assert.NoError(t, err)
-		assert.Greater(t, w, int64(0))
+		assert.Greater(t, w, int64(0), "encrypted toc is", toc)
 	}
 }
 
